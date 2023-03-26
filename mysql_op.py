@@ -4,24 +4,33 @@ db = pymysql.connect(host='localhost', user='root', password='zixingche', databa
 
 
 def city_code(city):
-    cursor = db.cursor()
     res = "SELECT `adcode` FROM `city_code` WHERE `中文名` = '%s'" % city
-    cursor.execute(res)
-    code = cursor.fetchone()
-    return code[0]
+    return sel(res)[0]
 
 
 def save_message(time, group_id, user_id, raw_message):
-    cursor = db.cursor()
     res = "INSERT INTO `message` (`time`, `group_id`, `user_id`, `raw_message`) VALUES (%s, %s, %s, '%s')" % (
         time, group_id, user_id, raw_message)
     print(res)
+    execute(res)
+
+
+def sel(res):
     try:
-        # 执行sql语句
+        cursor = db.cursor()
         cursor.execute(res)
-        # 提交到数据库执行
+        code = cursor.fetchone()
+        return code
+    except:
+        print('error')
+        db.rollback()
+
+
+def execute(res):
+    try:
+        cursor = db.cursor()
+        cursor.execute(res)
         db.commit()
     except:
-        # 如果发生错误则回滚
         print('error')
         db.rollback()
