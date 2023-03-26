@@ -11,6 +11,7 @@ import translate
 app = Sanic('qqbot')
 switch = False
 at = '[CQ:at,qq=1154850482]'
+reply_list = ['在？', '在不？', '在吗？', '滴滴', '？']
 
 
 @app.websocket('/qqbot')
@@ -35,6 +36,34 @@ async def qqbot(request, ws):
             ret = group_message(raw_message, time_, raw_card, raw_nickname, group_id, user_id)
             await ws.send(json.dumps(ret))
 
+        if data.get('message_type') == 'private' and data.get('raw_message'):
+            raw_message = data['raw_message']
+            raw_sender = data['sender']
+            raw_nickname = raw_sender.get('nickname')
+            user_id = data['user_id']
+            time_ = int(data['time'])
+
+            ret = private_message(raw_message, time_, raw_nickname, user_id)
+            await ws.send(json.dumps(ret))
+
+
+# 个人消息
+def private_message(raw_message, time_, nickname, user_id):
+    if raw_message in reply_list:
+        text = '【自动回复】本人现在不在，有事请留言，最好不要以表情包和图片的形式告知。'
+    else:
+        text, user_id = '【滴滴】' + nickname + '：' + raw_message, 3271993008
+    ret = {
+        'action': 'send_private_msg',
+        'params': {
+            'user_id': user_id,
+            'message': text,
+        }
+    }
+    return ret
+
+
+# 群消息
 def group_message(raw_message, time_, raw_card, raw_nickname, group_id=771695831, user_id=None):
     text = ""
     global switch
@@ -54,8 +83,6 @@ def group_message(raw_message, time_, raw_card, raw_nickname, group_id=771695831
 
     # 存储群消息
     mysql_op.save_message(time_, group_id, user_id, raw_message)
-    # if group_id == '781431900':
-    #     return
 
     # 询问天气
     if "天气" in raw_message:
