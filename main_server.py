@@ -52,7 +52,8 @@ def private_message(raw_message, time_, nickname, user_id):
     if raw_message in reply_list:
         text = '【自动回复】本人现在不在，有事请留言，最好不要以表情包和图片的形式告知。'
     else:
-        text, user_id = '【滴滴】' + nickname + '：' + raw_message, 3271993008
+        text = '【滴滴】' + nickname + '(' + str(user_id) +')：' + raw_message
+        user_id = 3271993008
     ret = {
         'action': 'send_private_msg',
         'params': {
