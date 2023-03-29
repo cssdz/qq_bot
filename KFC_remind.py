@@ -7,6 +7,6 @@ def kfc(hour, minute, week):
         kfc_status = 1
         return text
 
-    if minute == 1:
+    if minute == 1 and kfc_status == 1:
         kfc_status = 0
     return None
