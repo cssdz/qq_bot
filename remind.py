@@ -43,4 +43,4 @@ def remind_event():
         mysql_op.execute(res)
         return info[1], info[2], info[3]
     else:
-        pass
+        return False
