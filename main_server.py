@@ -1,3 +1,4 @@
+import datetime
 import json
 import time
 import weather
@@ -7,6 +8,8 @@ import mysql_op
 import TaskBoard
 import remind
 import translate
+import tell_me
+import KFC_remind
 
 app = Sanic('qqbot')
 switch = False
@@ -18,10 +21,10 @@ reply_list = ['在？', '在不？', '在吗？', '滴滴', '？']
 async def qqbot(request, ws):
     """QQ机器人"""
     while True:
-        print(request)
+        # print(request)
         data = await ws.recv()
         data = json.loads(data)
-        print(data)
+        # print(data)
         # if 判断是群消息且文本消息不为空
         if data.get('message_type') == 'group' and data.get('raw_message'):
             raw_message = data['raw_message']
@@ -34,6 +37,8 @@ async def qqbot(request, ws):
 
             # print(data)
             ret = group_message(raw_message, time_, raw_card, raw_nickname, group_id, user_id)
+            if ret is False:
+                continue
             await ws.send(json.dumps(ret))
 
         if data.get('message_type') == 'private' and data.get('raw_message'):
@@ -46,14 +51,44 @@ async def qqbot(request, ws):
             ret = private_message(raw_message, time_, raw_nickname, user_id)
             await ws.send(json.dumps(ret))
 
+        else:
+            status = 0
+            hour, minute, sec, weekday = time.localtime().tm_hour, time.localtime().tm_min, \
+                time.localtime().tm_sec, datetime.datetime.now().weekday()
+            info = remind.remind_event()
+            info_1 = tell_me.tell_event()
+            info_2 = KFC_remind.kfc(hour, minute, weekday)
+            text, group_id, user_id = "", 701209234, 3271993008
+            if info_2 is not None:
+                text = info_2
 
-# 个人消息
-def private_message(raw_message, time_, nickname, user_id):
-    if raw_message in reply_list:
-        text = '【自动回复】本人现在不在，有事请留言，最好不要以表情包和图片的形式告知。'
-    else:
-        text = '【滴滴】' + nickname + '(' + str(user_id) +')：' + raw_message
-        user_id = 3271993008
+            if info is not False:
+                group_id, user_id, text = info
+
+            if info_1 is not False:
+                text, status = info_1, 1
+
+            if hour == 6 and minute == 30 and sec in range(5):
+                group_id = 771695831
+                text = weather.weather(city_code=411300)
+                text += "\n%s" % TaskBoard.board_message(7)
+                time.sleep(5)
+
+            if hour == 6 and minute == 30 and sec in range(30, 35):
+                group_id = 771695831
+                text += "%s" % TaskBoard.board_message(5)
+                time.sleep(5)
+
+            if text != "":
+                ret = ""
+                if status == 0:
+                    ret = group_ret(group_id, text)
+                if status == 1:
+                    ret = group_ret(user_id, text)
+                await ws.send(json.dumps(ret))
+
+
+def private_ret(user_id, text):
     ret = {
         'action': 'send_private_msg',
         'params': {
@@ -61,6 +96,28 @@ def private_message(raw_message, time_, nickname, user_id):
             'message': text,
         }
     }
+    return ret
+
+
+def group_ret(group_id, text):
+    ret = {
+        'action': 'send_group_msg',
+        'params': {
+            'group_id': group_id,
+            'message': text,
+        }
+    }
+    return ret
+
+
+# 个人消息
+def private_message(raw_message, time_, nickname, user_id):
+    if raw_message in reply_list:
+        text = '【自动回复】本人现在不在，有事请留言，最好不要以表情包和图片的形式告知。'
+    else:
+        text = '【滴滴】' + nickname + '(' + str(user_id) + ')：' + raw_message
+        user_id = 3271993008
+    ret = private_ret(user_id, text)
     return ret
 
 
@@ -122,31 +179,12 @@ def group_message(raw_message, time_, raw_card, raw_nickname, group_id=771695831
         except ValueError:
             return
 
-    else:
-        hour, minute, sec = time.localtime().tm_hour, time.localtime().tm_min, time.localtime().tm_sec
-        info = remind.remind_event()
-        if info is not None:
-            group_id, user_id, text = info
-
-        if hour == 6 and minute == 30 and sec in range(5):
-            text = weather.weather(city_code=411300)
-            text += "\n%s" % TaskBoard.board_message(7)
-            time.sleep(5)
-
-        if hour == 6 and minute == 30 and sec in range(30, 35):
-            text += "%s" % TaskBoard.board_message(5)
-            time.sleep(5)
-
     # 将发送信息打包为json格式并发送
     if text != '':
-        ret = {
-            'action': 'send_group_msg',
-            'params': {
-                'group_id': group_id,
-                'message': text,
-            }
-        }
+        ret = group_ret(group_id, text)
         return ret
+    else:
+        return False
 
 
 if __name__ == "__main__":
