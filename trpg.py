@@ -30,4 +30,4 @@ def roll(raw_card, raw_message):
     text = raw_card + "的投掷结果为：" + text
     if judge is False:
         text += "   总计：%s" % z
-    return text
+    return text, z
