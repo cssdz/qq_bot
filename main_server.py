@@ -10,6 +10,7 @@ import remind
 import translate
 import tell_me
 import KFC_remind
+import random_attribute
 
 app = Sanic('qqbot')
 switch = False
@@ -156,6 +157,9 @@ def group_message(raw_message, time_, raw_card, raw_nickname, group_id=771695831
         print(info)
         text = translate.connect(info)
 
+    if raw_message == "roll role":
+        text = random_attribute.rand_attribute(raw_card)
+
     # 开启骰子功能
     if raw_message == "trpg on":
         switch = True
@@ -168,7 +172,7 @@ def group_message(raw_message, time_, raw_card, raw_nickname, group_id=771695831
 
     # 骰子功能体现
     if switch is True and raw_message.find('d') > 0:
-        text = trpg.roll(raw_card, raw_message)
+        text, sum_ = trpg.roll(raw_card, raw_message)
         if text is False:
             return
 
