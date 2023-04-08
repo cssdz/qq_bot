@@ -8,7 +8,9 @@ def weather(city_code):
           'key=eec4ab98194cf860766846434a63ac84&city=%s&extensions=all' % city_code
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
                              '(KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36 Edg/87.0.664.47'}
+
     info = requests.get(url, headers=headers).text
+
     pattern = '.*?"city":"(.*?)".*?"date":"(.*?)","week":"(.*?)","dayweather":"(.*?)"' \
               ',"nightweather":"(.*?)","daytemp":"(.*?)","nighttemp":"(.*?)","daywind":"(.*?)","nightwind":"(.*?)"'
     results = re.findall(pattern, info, re.S)[0]
@@ -26,6 +28,7 @@ def weather(city_code):
 
     sub = abs(int(max_) - int(min_))
     week = week_info[int(week_num) - 1]
+
     if sub > 10:
         add = "温差较大，注意保暖♥"
     else:
@@ -38,4 +41,3 @@ def weather(city_code):
 
 # text = info.get('forecasts')
 # print(text)
-
