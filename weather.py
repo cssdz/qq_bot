@@ -11,11 +11,13 @@ def weather(city_code):
 
     info = requests.get(url, headers=headers).text
 
+    # 通过正则获取参数
     pattern = '.*?"city":"(.*?)".*?"date":"(.*?)","week":"(.*?)","dayweather":"(.*?)"' \
               ',"nightweather":"(.*?)","daytemp":"(.*?)","nighttemp":"(.*?)","daywind":"(.*?)","nightwind":"(.*?)"'
     results = re.findall(pattern, info, re.S)[0]
     city, date, week_num, status_1, status_2, max_, min_, wind_1, wind_2 = results
 
+    # 根据参数输出文本信息
     if status_1 == status_2:
         text_1 = "天气%s" % status_1
     else:
