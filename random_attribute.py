@@ -68,5 +68,7 @@ def print_text(raw_card, attribute, others, sum_):
         text += "%s=%s/%d/%d\n" % (att, attribute[att], int(attribute[att] / 2), attribute[att] / 5)
     text += "共计:%d\n" % sum_
     for oth in oth_keys:
-        text += "%s=%s\n" % (oth, others[oth])
+        text += "%s=%s" % (oth, others[oth])
+        if oth != "移动力MOV":
+            text += "\n"
     return text
