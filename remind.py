@@ -9,7 +9,7 @@ def re_process(info, group_id, user_id):
     try:
         mon, day, hour, minute = info[7:9], info[10:12], info[13:15], info[16:18]
     except ValueError:
-        return False
+        return "格式错误！"
     dt = datetime.strptime("%s.%s.%s.%s.%s.00" % (year, mon, day, hour, minute), "%Y.%m.%d.%H.%M.%S")
     timestamp = int(time.mktime(dt.timetuple()))
     timestamp_now = int(time.time())
