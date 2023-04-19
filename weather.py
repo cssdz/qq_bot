@@ -39,7 +39,3 @@ def weather(city_code):
     text = "今天是%s，星期%s，%s%s，温度%s到%s度，%s，%s" % (
         date, week, city, text_1, max_, min_, wind, add)
     return text
-
-
-# text = info.get('forecasts')
-# print(text)
