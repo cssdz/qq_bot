@@ -53,11 +53,11 @@ def select_db(others, str_siz):
         others["伤害奖励DB"], others["体格"] = 0, 0
 
     elif 125 <= str_siz <= 164:
-        text, others["伤害奖励DB"] = trpg.roll("", "1d4")
+        others["伤害奖励DB"] = "1d4"
         others["体格"] = 1
 
     else:
-        text, others["伤害奖励DB"] = trpg.roll("", "1d6")
+        others["伤害奖励DB"] = "1d6"
         others["体格"] = 2
 
     return others["伤害奖励DB"], others["体格"]
