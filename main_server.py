@@ -14,7 +14,7 @@ import random_attribute
 
 app = Sanic('qqbot')
 at = '[CQ:at,qq=1154850482]'
-reply_list = ['在？', '在不？', '在吗？', '滴滴', '？']
+reply_list = ['在？', '在不？', '在吗？', '滴滴', '？', '1']
 switch = False
 
 
@@ -56,20 +56,21 @@ async def qqbot(request, ws):
 
         else:
             status = 0
+            text, group_id, user_id = "", 701209234, 3271993008
             hour, minute, sec, weekday = time.localtime().tm_hour, time.localtime().tm_min, \
                 time.localtime().tm_sec, datetime.datetime.now().weekday()
             info = remind.remind_event()
             info_1 = tell_me.tell_event()
             info_2 = KFC_remind.kfc(hour, minute, weekday)
-            text, group_id, user_id = "", 701209234, 3271993008
-            if info_2 is not None:
-                text = info_2
 
             if info is not False:
                 group_id, user_id, text = info
 
             if info_1 is not False:
                 text, status = info_1, 1
+
+            if info_2 is not None:
+                text = info_2
 
             if hour == 6 and minute == 30 and sec in range(5):
                 group_id = 771695831
