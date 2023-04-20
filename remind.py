@@ -31,7 +31,7 @@ def remind_event():
     try:
         time_ = info[0]
     except:
-        return False, False, ''
+        return False
     mon_, day_ = time.localtime(time_).tm_mon, time.localtime(time_).tm_mday
     hour_, minute_ = time.localtime(time_).tm_hour, time.localtime(time_).tm_min
     time_ = [mon_, day_, hour_, minute_]
