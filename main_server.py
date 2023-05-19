@@ -132,7 +132,6 @@ def private_message(raw_message, time_, nickname, user_id):
     if switch is True and raw_message.find('d') > 0:
         text, sum_ = trpg.roll(nickname, raw_message)
         if text is not False:
-            user_id = 3271993008
             mode = "trpg"
             ret = private_ret(user_id, text)
             return ret, mode
