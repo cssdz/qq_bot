@@ -199,7 +199,7 @@ def group_message(raw_message, time_, raw_card, raw_nickname, group_id=771695831
         except ValueError:
             return
 
-    # 将发送信息打包为json格式并发送
+    # 将发送信息打包为json格式发送
     if text != '':
         ret = group_ret(group_id, text)
         return ret
